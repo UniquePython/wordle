@@ -11,13 +11,13 @@ class Feedback(Enum):
 
 
 class Wordle:
-    def __init__(self, wordlist: Path, wordlen: int, max_tries: int) -> None:
+    def __init__(self, wordlist: Path, wordlen: int = 5, max_tries: int = 6) -> None:
         self.wordlist = wordlist
         self.wordlen = wordlen
         self.max_tries = max_tries
 
         self._validate_inputs()
-        self.words = self._load_words()
+        self.words = self.load_words(self.wordlist, self.wordlen)
         self.answer = random.choice(self.words)
 
         self.tries_left = max_tries
@@ -34,13 +34,14 @@ class Wordle:
         if self.max_tries <= 0:
             raise ValueError("Number of tries must be at least 1")
 
-    def _load_words(self) -> list[str]:
+    @staticmethod
+    def load_words(wordlist: Path, wordlen: int) -> list[str]:
         words: list[str] = []
 
-        with self.wordlist.open() as infile:
+        with wordlist.open() as infile:
             for line in infile:
                 word = line.strip().upper()
-                if len(word) == self.wordlen:
+                if len(word) == wordlen:
                     words.append(word)
 
         if not words:
